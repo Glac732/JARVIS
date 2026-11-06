@@ -1,0 +1,2 @@
+import React from 'react';
+export default function Core({state}:{state:string}){return <div className={"core-wrap state-"+String(state).toLowerCase()} aria-label={"JARVIS core "+state}><div className="core-orbit orbit-one"/><div className="core-orbit orbit-two"/><div className="core-orbit orbit-three"/><div className="core-center">J</div><span className="core-spark spark-one"/><span className="core-spark spark-two"/></div>;}
