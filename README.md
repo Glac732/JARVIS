@@ -11,7 +11,7 @@ JARVIS is an Electron + React + TypeScript Windows desktop assistant. The primar
 ## Windows build workflow
 GitHub Actions workflow: [Windows x64](.github/workflows/windows-release.yml).
 
-The workflow runs on pushes to `main`, pull requests, version tags and manual dispatch. It installs dependencies, typechecks all projects, runs Vitest, generates the application icon, builds the x64 NSIS and portable packages, verifies PE architecture and SHA-256 hashes, then performs install/start/uninstall smoke tests.
+The workflow runs on pushes to `main`, pull requests, version tags and manual dispatch. It installs dependencies, typechecks all projects, runs Vitest, generates the application icon, builds the x64 NSIS and portable packages, verifies PE architecture and SHA-256 hashes, then performs install/start/uninstall smoke tests. To publish an auto-update release, push a version tag such as `v1.0.3`; after the Windows smoke tests pass, electron-builder publishes the installer, `latest.yml`, and blockmap assets to the GitHub Release. Installed packaged builds check for updates at startup and every six hours, download updates in the background, and prompt before restarting.
 
 ## Local development
 Requires Node.js 22 and npm:
@@ -41,7 +41,7 @@ Brave web search is optional and requires a Brave Search API key.
 Windows application launching is disabled by default and restricted to a predefined allowlist. Website URLs are validated before opening. Conversation history is stored locally only when enabled. No telemetry is configured.
 
 ## Known limitations
-See [Feature Matrix](docs/FEATURE-MATRIX.md). Browser automation, full computer-use automation, document extraction, image generation, wake-word detection, OAuth integrations and automatic updates are not implemented in this version.
+See [Feature Matrix](docs/FEATURE-MATRIX.md). Browser automation, full computer-use automation, document extraction, image generation, wake-word detection and OAuth integrations are not implemented in this version.
 
 ## Release integrity
 See [Test Report](docs/TEST-REPORT.md). A workflow being present does not imply that a build has passed. Executables must be downloaded from a successful CI run or tagged release and verified by their hashes.
