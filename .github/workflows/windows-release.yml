@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   windows:
+    permissions:
+      contents: write
     runs-on: windows-latest
     timeout-minutes: 45
     steps:
@@ -74,6 +76,11 @@ jobs:
       - name: Windows install, launch and uninstall smoke tests
         shell: pwsh
         run: ./scripts/windows-smoke.ps1
+      - name: Publish auto-update release assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win --x64 --publish always
       - name: Ensure a CI report exists
         if: always()
         shell: pwsh
@@ -90,27 +97,8 @@ jobs:
           path: |
             release/JARVIS-Setup-x64.exe
             release/JARVIS-Portable-x64.exe
+            release/latest.yml
+            release/*.blockmap
             release/windows-smoke-report.txt
           if-no-files-found: warn
           retention-days: 90
-
-  publish-release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: windows
-    runs-on: windows-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download verified Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: JARVIS-Windows-x64
-          path: release
-      - name: Publish tagged GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            release/JARVIS-Setup-x64.exe
-            release/JARVIS-Portable-x64.exe
-            release/windows-smoke-report.txt
-          generate_release_notes: true
