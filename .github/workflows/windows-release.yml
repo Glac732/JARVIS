@@ -62,10 +62,10 @@ jobs:
           $portableMachine = Get-PeMachine $portable.FullName
           $appMachine = Get-PeMachine $app.FullName
           if ($installerMachine -notin @(0x014c, 0x8664)) { throw "Invalid installer PE machine 0x$($installerMachine.ToString('X4'))" }
-          if ($portableMachine -ne 0x8664) { throw "Portable executable is not x64: 0x$($portableMachine.ToString('X4'))" }
+          if ($portableMachine -notin @(0x014c, 0x8664)) { throw "Invalid portable bootstrap PE machine: 0x$($portableMachine.ToString('X4'))" }
           if ($appMachine -ne 0x8664) { throw "Installed application payload is not x64: 0x$($appMachine.ToString('X4'))" }
           Write-Host "NSIS bootstrap PE machine: 0x$($installerMachine.ToString('X4'))"
-          Write-Host "Portable PE machine: 0x$($portableMachine.ToString('X4'))"
+          Write-Host "Portable launcher PE machine: 0x$($portableMachine.ToString('X4'))"
           Write-Host "Installed app payload PE machine: 0x$($appMachine.ToString('X4'))"
           foreach ($file in @($installer, $portable)) {
             $hash = Get-FileHash $file.FullName -Algorithm SHA256
