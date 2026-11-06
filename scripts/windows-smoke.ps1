@@ -1,5 +1,6 @@
 $ErrorActionPreference = 'Stop'
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path`n$release = Join-Path $repoRoot 'release'
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$release = Join-Path $repoRoot 'release'
 $installer = Join-Path $release 'JARVIS-Setup-x64.exe'
 $portable = Join-Path $release 'JARVIS-Portable-x64.exe'
 $log = Join-Path $release 'windows-smoke-report.txt'
