@@ -24,13 +24,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --prefer-online
       - name: Typecheck all TypeScript projects
         run: npm run typecheck
       - name: Unit tests
         run: npm test
+      - name: Generate application icon
+        shell: pwsh
+        run: ./scripts/generate-icon.ps1
       - name: Build installer and portable executable
         run: npm run dist:all
       - name: Verify artifact names, PE architecture and hashes
@@ -64,7 +66,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path release | Out-Null
           if (!(Test-Path 'release/windows-smoke-report.txt')) {
-            @('JARVIS Windows x64 CI report', "Workflow conclusion: ${{ job.status }}", 'Windows smoke tests did not complete; inspect the preceding failed step logs.') | Set-Content 'release/windows-smoke-report.txt' -Encoding UTF8
+            @('JARVIS Windows x64 CI report', "Workflow conclusion: ${{ job.status }}", 'Smoke tests did not complete; inspect preceding failed steps.') | Set-Content 'release/windows-smoke-report.txt' -Encoding UTF8
           }
       - name: Upload release artifacts and smoke report
         if: always()
