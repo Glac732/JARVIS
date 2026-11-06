@@ -22,6 +22,5 @@ $stream = [System.IO.File]::Open((Join-Path (Get-Location) 'build/icon.ico'),[Sy
 $icon.Save($stream)
 $stream.Dispose()
 $icon.Dispose()
-[void][System.Runtime.InteropServices.Marshal]::ZeroFreeCoTaskMemUnicode([IntPtr]::Zero)
 $g.Dispose();$brush.Dispose();$pen.Dispose();$font.Dispose();$bmp.Dispose()
 Write-Host 'Generated original JARVIS application icon.'
