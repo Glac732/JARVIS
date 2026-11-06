@@ -1,4 +1,5 @@
 import {app,BrowserWindow,ipcMain,safeStorage,shell,dialog,nativeImage,Tray,Menu} from 'electron';
+import {autoUpdater} from 'electron-updater';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import {spawn,spawnSync} from 'node:child_process';
@@ -14,7 +15,27 @@ async function persist(){if((secret.apiKey||secret.searchKey)&&!safeStorage.isEn
 function status(s:string){windowRef?.webContents.send('jarvis:status',s);}
 function makeWindow(){windowRef=new BrowserWindow({width:1440,height:920,minWidth:1000,minHeight:680,show:false,backgroundColor:'#070a10',title:'J.A.R.V.I.S.',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'../preload/index.js'),contextIsolation:true,nodeIntegration:false,sandbox:true}});windowRef.webContents.setWindowOpenHandler(()=>({action:'deny'}));windowRef.webContents.on('will-navigate',(e,u)=>{if(!u.startsWith('file://')&&!( !app.isPackaged&&u.startsWith('http://127.0.0.1:5173')))e.preventDefault();});windowRef.once('ready-to-show',()=>windowRef?.show());if(app.isPackaged)void windowRef.loadFile(path.join(__dirname,'../renderer/index.html'));else void windowRef.loadURL('http://127.0.0.1:5173');windowRef.on('closed',()=>windowRef=null);}
 function makeTray(){try{const icon=nativeImage.createFromPath(path.join(process.resourcesPath,'icon.png'));tray=new Tray(icon);tray.setToolTip('J.A.R.V.I.S.');tray.setContextMenu(Menu.buildFromTemplate([{label:'Show JARVIS',click:()=>windowRef?.show()},{label:'Quit',click:()=>app.quit()}]));}catch{}}
-app.whenReady().then(async()=>{await load();makeWindow();makeTray();});app.on('before-quit',()=>active?.abort());app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit();});
+function configureAutoUpdates(){
+  if(!app.isPackaged)return;
+  autoUpdater.autoDownload=true;
+  autoUpdater.autoInstallOnAppQuit=true;
+  autoUpdater.on('error',error=>console.error('[JARVIS updater]',error));
+  autoUpdater.on('update-downloaded',info=>{
+    void dialog.showMessageBox({
+      type:'info',
+      title:'J.A.R.V.I.S. update ready',
+      message:`J.A.R.V.I.S. version ${info.version} has been downloaded.`,
+      detail:'Restart J.A.R.V.I.S. now to install the update. Your settings and API credentials will be preserved.',
+      buttons:['Restart & install','Later'],
+      defaultId:0,
+      cancelId:1
+    }).then(({response})=>{if(response===0)autoUpdater.quitAndInstall();});
+  });
+  const check=()=>{void autoUpdater.checkForUpdates().catch(error=>console.error('[JARVIS update check]',error));};
+  setTimeout(check,12000);
+  setInterval(check,6*60*60*1000);
+}
+app.whenReady().then(async()=>{await load();makeWindow();makeTray();configureAutoUpdates();});app.on('before-quit',()=>active?.abort());app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit();});
 ipcMain.handle('settings:get',()=>({...settings}));
 ipcMain.handle('settings:save',async(_e,p:any)=>{if(!p||typeof p!=='object'||Array.isArray(p))throw Error('Invalid settings.');const {apiKey,searchKey,removeApiKey,removeSearchKey,...pub}=p;settings={...settings,...validatePublicSettings(pub)} as PublicSettings;if(apiKey!==undefined){if(typeof apiKey!=='string'||apiKey.length>4096)throw Error('Invalid API key.');secret.apiKey=apiKey.trim()||undefined;}if(searchKey!==undefined){if(typeof searchKey!=='string'||searchKey.length>4096)throw Error('Invalid search key.');secret.searchKey=searchKey.trim()||undefined;}if(removeApiKey===true)secret.apiKey=undefined;if(removeSearchKey===true)secret.searchKey=undefined;await persist();if(!settings.memoryEnabled)await fs.rm(historyPath,{force:true});return {...settings};});
 ipcMain.handle('app:version',()=>app.getVersion());
