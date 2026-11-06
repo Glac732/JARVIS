@@ -10,7 +10,7 @@ $brush = New-Object System.Drawing.Drawing2D.LinearGradientBrush($rect,[System.D
 $g.FillEllipse($brush,$rect)
 $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(100,190,235),3)
 $g.DrawEllipse($pen,36,36,184,184)
-$font = New-Object System.Drawing.Font('Segoe UI',112,[System.Drawing.FontStyle]::Light,[System.Drawing.GraphicsUnit]::Pixel)
+$font = [System.Drawing.Font]::new('Segoe UI',[single]112,[System.Drawing.FontStyle]::Regular,[System.Drawing.GraphicsUnit]::Pixel)
 $sf = New-Object System.Drawing.StringFormat
 $sf.Alignment = [System.Drawing.StringAlignment]::Center
 $sf.LineAlignment = [System.Drawing.StringAlignment]::Center
