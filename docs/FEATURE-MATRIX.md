@@ -26,7 +26,7 @@ Status reflects the code currently committed to this repository. No provider, Wi
 | Persistent editable memory | Not implemented | Conversation history only |
 | OAuth productivity integrations | Not implemented | No calendar/email/drive OAuth |
 | Native notifications | Not implemented | No notification workflow |
-| Automatic updater | Not implemented | No signed update feed |
+| Automatic updater | Implemented in packaged builds | Checks GitHub Releases at startup and every 6 hours; downloads in background and prompts to restart. Windows binaries remain unsigned until a signing certificate is configured |
 | Code signing | Not configured | Public release would be unsigned unless certificate configured |
 | Portable data directory | Implemented in source | Uses PORTABLE_EXECUTABLE_DIR when set |
 
