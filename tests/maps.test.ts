@@ -1,0 +1,3 @@
+import {describe,it,expect} from 'vitest';
+import {MAPS,chooseSpawn} from '../src/renderer/game/maps';
+describe('map catalog',()=>{it('defines all six named theatres with cover and balanced team spawns',()=>{expect(Object.keys(MAPS)).toHaveLength(6);for(const m of Object.values(MAPS)){expect(m.cover.length).toBeGreaterThan(0);expect(m.spawns.filter(s=>s.team==='alpha')).toHaveLength(2);expect(m.spawns.filter(s=>s.team==='bravo')).toHaveLength(2);}});it('selects the safest available team spawn',()=>{const m=MAPS.OUTPOST;const s=chooseSpawn(m,'alpha',[{x:-29,z:-25}]);expect(s.id).toBe('A2');});it('rejects a team without configured spawns',()=>expect(()=>chooseSpawn(MAPS.OUTPOST,'free',[])).toThrow());});
