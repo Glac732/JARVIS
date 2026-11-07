@@ -27,11 +27,27 @@ $format.Alignment = [System.Drawing.StringAlignment]::Center
 $format.LineAlignment = [System.Drawing.StringAlignment]::Center
 $g.DrawString('B',$font,$brush,(New-Object System.Drawing.RectangleF(70,80,372,340)),$format)
 $bmp.Save((Join-Path $repoRoot 'build/icon.png'),[System.Drawing.Imaging.ImageFormat]::Png)
-$hicon = $bmp.GetHicon()
-$icon = [System.Drawing.Icon]::FromHandle($hicon)
-$stream = [System.IO.File]::Open((Join-Path $repoRoot 'build/icon.ico'),[System.IO.FileMode]::Create)
-$icon.Save($stream)
-$stream.Dispose()
-$icon.Dispose()
+# ICO container with an embedded PNG frame (256x256). This format is supported by NSIS.
+$pngStream = New-Object System.IO.MemoryStream
+$bmp.Save($pngStream,[System.Drawing.Imaging.ImageFormat]::Png)
+$pngBytes = $pngStream.ToArray()
+$icoStream = [System.IO.File]::Open((Join-Path $repoRoot 'build/icon.ico'),[System.IO.FileMode]::Create)
+$writer = New-Object System.IO.BinaryWriter($icoStream)
+$writer.Write([UInt16]0)       # reserved
+$writer.Write([UInt16]1)       # icon resource
+$writer.Write([UInt16]1)       # one image
+$writer.Write([Byte]0)         # width 256 encoded as 0
+$writer.Write([Byte]0)         # height 256 encoded as 0
+$writer.Write([Byte]0)         # palette
+$writer.Write([Byte]0)         # reserved
+$writer.Write([UInt16]1)       # color planes
+$writer.Write([UInt16]32)      # bits per pixel
+$writer.Write([UInt32]$pngBytes.Length)
+$writer.Write([UInt32]22)      # image payload offset
+$writer.Write($pngBytes)
+$writer.Flush()
+$writer.Dispose()
+$icoStream.Dispose()
+$pngStream.Dispose()
 $format.Dispose();$brush.Dispose();$font.Dispose();$pen.Dispose();$bg.Dispose();$g.Dispose();$bmp.Dispose()
 Write-Host 'Generated valid BREACH application icon.'
