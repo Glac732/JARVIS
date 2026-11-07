@@ -1,0 +1,22 @@
+export type NavRect={x:number;z:number;halfWidth:number;halfDepth:number};
+export type NavPoint={x:number;z:number};
+type Node={x:number;z:number;g:number;f:number;parent?:string};
+const key=(x:number,z:number)=>x+','+z;
+export function findGridPath(start:NavPoint,goal:NavPoint,obstacles:readonly NavRect[],bounds={minX:-35,maxX:35,minZ:-32,maxZ:32},cell=2):NavPoint[]{
+ const toCell=(v:number)=>Math.round(v/cell),sx=toCell(start.x),sz=toCell(start.z),gx=toCell(goal.x),gz=toCell(goal.z);
+ const blocked=(x:number,z:number)=>{const px=x*cell,pz=z*cell;if(px<bounds.minX||px>bounds.maxX||pz<bounds.minZ||pz>bounds.maxZ)return true;return obstacles.some(o=>Math.abs(px-o.x)<o.halfWidth+.55&&Math.abs(pz-o.z)<o.halfDepth+.55);};
+ if(blocked(gx,gz))return [];
+ const open=new Map<string,Node>(),closed=new Set<string>(),parents=new Map<string,Node>(),first:Node={x:sx,z:sz,g:0,f:Math.abs(gx-sx)+Math.abs(gz-sz)};open.set(key(sx,sz),first);
+ const dirs=[[1,0],[-1,0],[0,1],[0,-1]] as const;let found:Node|undefined;let iterations=0;
+ while(open.size&&iterations++<6000){let current:Node|undefined;let currentKey='';for(const [k,n] of open){if(!current||n.f<current.f||(n.f===current.f&&n.g<current.g)){current=n;currentKey=k;}}if(!current)break;open.delete(currentKey);closed.add(currentKey);if(current.x===gx&&current.z===gz){found=current;break;}
+  for(const [dx,dz] of dirs){const x=current.x+dx,z=current.z+dz,k=key(x,z);if(closed.has(k)||blocked(x,z))continue;const g=current.g+1,old=open.get(k);if(!old||g<old.g){const next={x,z,g,f:g+Math.abs(gx-x)+Math.abs(gz-z),parent:currentKey};open.set(k,next);parents.set(k,next);}}
+ }
+ if(!found)return [];
+ const result:NavPoint[]=[];let cursor:Node|undefined=found;while(cursor){result.push({x:cursor.x*cell,z:cursor.z*cell});cursor=cursor.parent?closedNode(cursor.parent,closed,first,open):undefined;}
+ result.reverse();if(result.length)result[0]={x:start.x,z:start.z};result[result.length-1]={x:goal.x,z:goal.z};return result;
+ function closedNode(k:string,closedKeys:Set<string>,root:Node,remaining:Map<string,Node>):Node|undefined{
+  if(key(root.x,root.z)===k)return root;
+  // Parent records are retained separately while searching.
+  return parents.get(k)||remaining.get(k);
+ }
+}

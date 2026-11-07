@@ -4,14 +4,17 @@
 
 ## Current playable build
 
-The current development milestone is a **single-player offline bot match** on the original OUTPOST environment.
+The current development milestone is a **single-player offline bot match** on the original OUTPOST environment. Gameplay is being hardened in small, testable phases before online services are introduced.
 
 Implemented in this branch:
 - First-person 3D camera and pointer-lock mouse aiming.
 - WASD movement, sprint, crouch, jump and basic collision against map cover.
-- Two playable primary weapons: VKR-7 automatic rifle and KX-9 battle rifle.
+- Six selectable weapons across assault, battle rifle, shotgun, marksman rifle and sidearm classes: VKR-7, KX-9, M4A1, S12, DMR-11 and P9.
+- Independent magazine/reserve ammunition, weapon-specific fire cadence, semi-automatic trigger gating, reload timing and movement/aim accuracy penalties.
+- Right-mouse aim-down-sights with eased field-of-view transition, recoil and weapon sway.
 - Magazine and reserve ammunition, reload, weapon switching and hitscan damage.
-- Eight moving AI opponents with simple pursuit, attack, elimination and respawn behavior.
+- Eight AI opponents with line-of-sight checks, last-known-player tracking, pressure-aware retreat, cover seeking, flanking, advancing and regrouping decisions.
+- Synthesized combat sound effects for firing, reloads, impacts, footsteps and enemy shots. These are functional prototype effects, not final recorded audio assets.
 - Player health, regeneration, respawn, match timer, elimination counter and match completion.
 - Local profile persistence for XP, levels, credits, matches, wins, kills and deaths.
 - Operator selection, loadout selection, mission progress display, armory information and settings.
@@ -39,7 +42,7 @@ Click the game view to capture the mouse. Use the pause menu to resume or return
 
 This is an early playable vertical slice, not a finished AAA game. Online multiplayer, accounts, authoritative backend, matchmaking, voice chat, ranked play, global leaderboards, server-validated economy, store transactions, crates, seasons, anti-cheat, advanced animation, licensed 3D assets, full sound design, mobile controls and content patch delivery are **not implemented**. The UI does not invent online users or rankings. Profile and progression data are local to the current Windows installation and can be modified by a local user; they are not secure competitive progression.
 
-The current 3D map, operators, weapons and bots use original procedural geometry and materials. They are functional gameplay representations, not production-grade scanned or artist-authored character/weapon assets. The two graphics preferences currently affect renderer antialiasing/pixel ratio, field of view and mouse sensitivity; additional graphics controls will be added only when they affect the game.
+The current 3D map, operators, weapons and bots still use original procedural geometry and materials. They are functional gameplay representations, not production-grade artist-authored character/weapon assets. Replacing these with polished original character, weapon and environment models remains a major art-production milestone. The two graphics preferences currently affect renderer antialiasing/pixel ratio, field of view and mouse sensitivity; additional graphics controls will be added only when they affect the game.
 
 ## Build on Windows
 
@@ -73,11 +76,11 @@ The supplied screenshots inform the tactical FPS HUD, match readability, operato
 
 ## Project priorities
 
-1. Improve core FPS feel, AI behavior, collision and map quality.
-2. Add original animation, audio and more weapon families.
-3. Add secure persistent accounts and backend progression.
-4. Implement authoritative dedicated multiplayer and matchmaking.
-5. Expand maps, modes, cosmetics and content delivery.
-6. Profile and optimize performance on declared target hardware.
+1. Continue hardening movement, collision, hit registration, enemy perception, tactical cover use and combat balance with regression tests.
+2. Replace blockout/procedural geometry with authored original character, weapon, animation and environment assets; complete the sound pipeline.
+3. Add further maps, modes, operators, weapon attachments and loadout persistence.
+4. Build secure backend accounts, server-authoritative progression and inventory/economy APIs.
+5. Implement authoritative dedicated multiplayer, matchmaking, parties and moderation/anti-cheat foundations.
+6. Add patch delivery, performance profiling, accessibility and release hardening on declared target hardware.
 
 Do not describe a feature as complete unless it has a working implementation and a passing verification test.
