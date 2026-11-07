@@ -138,8 +138,8 @@ export default function BreachGame({onExit,onMatchEnd,initialWeapon}:Props){
  const gunDark=mat(0x171c1b),gunSteel=mat(0x46504c),gunPoly=mat(0x343b37),rubber=mat(0x202522),glove=mat(0x252b27),sleeve=mat(0x4b5748);
  const addGunPart=(root:THREE.Group,geo:THREE.BufferGeometry,m:THREE.Material,x:number,y:number,z:number)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;root.add(o);return o;};
  const makeWeapon=(id:string)=>{const model=new THREE.Group();const pistol=id==='P9',shotgun=id==='S12',marksman=id==='DMR-11',battle=id==='KX-9',carbine=id==='M4A1';
-  const receiverLength=pistol?.38:shotgun?.72:marksman?.78:battle?.68:carbine?.55;
-  const barrelLength=pistol?.28:shotgun?.86:marksman?.95:battle?.78:carbine?.62;
+  const receiverLength=pistol?.38:shotgun?.72:marksman?.78:battle?.68:carbine?.55:.55;
+  const barrelLength=pistol?.28:shotgun?.86:marksman?.95:battle?.78:carbine?.62:.62;
   const stockLength=pistol?0:shotgun?.32:marksman?.48:battle?.45:.38;
   addGunPart(model,new THREE.BoxGeometry(.23,.19,receiverLength),gunPoly,.36,-.29,-.78);
   addGunPart(model,new THREE.BoxGeometry(.19,.15,receiverLength*.92),gunDark,.36,-.25,-.78-receiverLength*.52);
