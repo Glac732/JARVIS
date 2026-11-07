@@ -4,7 +4,7 @@ export type GameAudio = {
   reload(): void;
   impact(): void;
   footstep(intensity: number): void;
-  enemyShot(): void;
+  enemyShot(pan?: number): void;
   setMuted(muted: boolean): void;
   dispose(): void;
 };
@@ -37,7 +37,7 @@ export function createGameAudio(): GameAudio {
     return context;
   };
 
-  const tone = (frequency: number, duration: number, wave: OscillatorType = 'triangle', volume = 0.2, slide = 0, delay = 0) => {
+  const tone = (frequency: number, duration: number, wave: OscillatorType = 'triangle', volume = 0.2, slide = 0, delay = 0, pan = 0) => {
     const ctx = ensure();
     if (!ctx || !master) return;
     const oscillator = ctx.createOscillator();
@@ -50,12 +50,12 @@ export function createGameAudio(): GameAudio {
     gain.gain.exponentialRampToValueAtTime(volume, start + 0.006);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
     oscillator.connect(gain);
-    gain.connect(master);
+    if (typeof ctx.createStereoPanner === 'function') { const panner=ctx.createStereoPanner(); panner.pan.value=Math.max(-1,Math.min(1,pan)); gain.connect(panner); panner.connect(master); } else gain.connect(master);
     oscillator.start(start);
     oscillator.stop(start + duration + 0.02);
   };
 
-  const burst = (duration: number, volume: number, filter: number) => {
+  const burst = (duration: number, volume: number, filter: number, pan = 0) => {
     const ctx = ensure();
     if (!ctx || !master || !noise) return;
     const source = ctx.createBufferSource();
@@ -69,7 +69,7 @@ export function createGameAudio(): GameAudio {
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
     source.connect(lowpass);
     lowpass.connect(gain);
-    gain.connect(master);
+    if (typeof ctx.createStereoPanner === 'function') { const panner=ctx.createStereoPanner(); panner.pan.value=Math.max(-1,Math.min(1,pan)); gain.connect(panner); panner.connect(master); } else gain.connect(master);
     source.start(start);
     source.stop(start + duration);
   };
@@ -107,9 +107,9 @@ export function createGameAudio(): GameAudio {
       burst(0.045, 0.055 * intensity, 260);
       tone(68, 0.035, 'sine', 0.045, -18);
     },
-    enemyShot() {
-      tone(78, 0.08, 'sawtooth', 0.09, -38);
-      burst(0.1, 0.12, 600);
+    enemyShot(pan = 0) {
+      tone(78, 0.08, 'sawtooth', 0.09, -38, 0, pan);
+      burst(0.1, 0.12, 600, pan);
     },
     setMuted(value) {
       muted = value;
