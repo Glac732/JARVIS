@@ -42,3 +42,5 @@ html,body,#root{min-width:360px;min-height:560px;background:#090d0d}
 .home-screen .hero-operator{opacity:.22;mix-blend-mode:screen}
 
 .stamina-label{display:block;margin-top:5px;color:#c1b98e!important}.health-block .stamina-bar{height:3px;width:180px;background:#252c27;display:block}.health-block .stamina-bar i{background:linear-gradient(90deg,#9caa78,#d5d2a4)}
+
+.brand-symbol{display:block;width:44px;height:44px;object-fit:cover;border:1px solid #84785e;border-radius:4px;box-shadow:0 6px 18px #0008}.brand-symbol span{display:none}
