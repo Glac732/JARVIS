@@ -2,7 +2,7 @@ name: Build and smoke-test BREACH Windows x64
 
 on:
   push:
-    branches: [main]
+    branches: [main, breach-fps]
     tags: ["v*"]
   pull_request:
     branches: [main]
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: jarvis-windows-${{ github.ref }}
+  group: breach-windows-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
