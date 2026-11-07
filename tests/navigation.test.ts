@@ -16,6 +16,6 @@ describe('tactical cover selection',()=>{
   expect(findProtectedCover({x:8,z:0},{x:-8,z:0},[])).toBeNull();
  });
  it('does not accept an obstacle that is not between player and candidate',()=>{
-  expect(findProtectedCover({x:8,z:0},{x:12,z:0},[{x:0,z:0,halfWidth:2,halfDepth:3}])).toBeNull();
+  expect(findProtectedCover({x:8,z:0},{x:-8,z:0},[{x:0,z:20,halfWidth:2,halfDepth:3}])).toBeNull();
  });
 });
