@@ -27,9 +27,9 @@ function createBot(scene:THREE.Scene,x:number,z:number,index=0):Bot{
  const palette=[0x4b5547,0x39434a,0x655b48,0x343b38],uniform=mat(palette[index%palette.length]),dark=mat(0x171d1c),armor=mat(0x343b37),fabric=mat(0x66705c),skin=mat(index%3===0?0x80634e:index%3===1?0x9a785d:0x674e3f),visor=new THREE.MeshStandardMaterial({color:0x18272b,metalness:.72,roughness:.22});
  const part=(geo:THREE.BufferGeometry,m:THREE.Material,x:number,y:number,z:number,group:THREE.Group=g)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;group.add(o);return o;};
  // Layered torso, plate carrier, shoulder protection and modular equipment.
- part(new THREE.CapsuleGeometry(.31,.58,5,12),uniform,0,1.13,0);
+ part(new THREE.CylinderGeometry(.29,.35,.72,14),uniform,0,1.13,0);
  part(new THREE.BoxGeometry(.58,.58,.22),armor,0,1.18,.205);
- part(new THREE.BoxGeometry(.34,.38,.075),dark,0,1.2,.34);
+ part(new THREE.BoxGeometry(.34,.38,.075),dark,0,1.2,.34);part(new THREE.BoxGeometry(.11,.14,.035),rust,-.25,1.43,.31);part(new THREE.BoxGeometry(.1,.14,.035),fabric,.25,1.43,.31);
  for(let i=0;i<3;i++){part(new THREE.BoxGeometry(.13,.2,.1),fabric,-.2+i*.2,1.06,.38);part(new THREE.BoxGeometry(.14,.18,.1),dark,-.2+i*.2,1.06,.44);}
  part(new THREE.BoxGeometry(.42,.3,.12),dark,0,.72,-.19);
  // Neck, head, balaclava, helmet shell, rails and optics.
@@ -49,17 +49,17 @@ function createBot(scene:THREE.Scene,x:number,z:number,index=0):Bot{
  // Articulated legs with boots.
  for(const side of [-1,1]){
   const leg=new THREE.Group();leg.position.set(side*.17,.78,0);g.add(leg);limbs.push(leg);
-  part(new THREE.CapsuleGeometry(.13,.43,4,8),uniform,0,-.22,0,leg);
+  part(new THREE.CylinderGeometry(.125,.15,.43,12),uniform,0,-.22,0,leg);
   part(new THREE.BoxGeometry(.28,.23,.29),fabric,0,-.3,.035,leg);
   part(new THREE.CylinderGeometry(.115,.1,.34,10),dark,0,-.59,.015,leg);
   part(new THREE.BoxGeometry(.22,.12,.36),dark,0,-.78,.1,leg);
-  part(new THREE.BoxGeometry(.23,.1,.16),armor,0,-.12,.02,leg);
+  part(new THREE.BoxGeometry(.23,.1,.16),armor,0,-.12,.02,leg);part(new THREE.BoxGeometry(.17,.18,.08),dark,0,-.37,.17,leg);part(new THREE.BoxGeometry(.16,.09,.12),fabric,0,-.61,.11,leg);
  }
  // Arms are independent swing groups; gloves and forearm guards are separate meshes.
  for(const side of [-1,1]){
   const arm=new THREE.Group();arm.position.set(side*.38,1.36,.02);g.add(arm);limbs.push(arm);
-  const upper=part(new THREE.CapsuleGeometry(.105,.34,4,8),uniform,side*.015,-.2,.04,arm);upper.rotation.z=side*-.16;
-  const fore=part(new THREE.CapsuleGeometry(.085,.3,4,8),fabric,side*.025,-.46,.13,arm);fore.rotation.z=side*.12;
+  const upper=part(new THREE.CylinderGeometry(.095,.12,.36,12),uniform,side*.015,-.2,.04,arm);upper.rotation.z=side*-.16;
+  const fore=part(new THREE.CylinderGeometry(.075,.095,.31,12),fabric,side*.025,-.46,.13,arm);fore.rotation.z=side*.12;
   part(new THREE.BoxGeometry(.13,.22,.12),armor,side*.025,-.43,.19,arm);
   part(new THREE.SphereGeometry(.095,10,8),dark,side*.025,-.64,.2,arm);
  }
@@ -157,10 +157,10 @@ export default function BreachGame({onExit,onMatchEnd,initialWeapon}:Props){
   for(const z of [-.65,-.83])addGunPart(model,new THREE.CylinderGeometry(.022,.022,.025,10),gunSteel,.49,-.29,z).rotation.z=Math.PI/2;
   // Left support arm and right firing hand, with visible sleeves and gloves.
   const leftArm=new THREE.Group();leftArm.position.set(.04,-.51,-.88);model.add(leftArm);
-  const ls=addGunPart(leftArm,new THREE.CapsuleGeometry(.105,.48,5,10),sleeve,-.23,-.12,-.02);ls.rotation.x=-.65;ls.rotation.z=-.18;
+  const ls=addGunPart(leftArm,new THREE.CylinderGeometry(.095,.115,.48,12),sleeve,-.23,-.12,-.02);ls.rotation.x=-.65;ls.rotation.z=-.18;
   addGunPart(leftArm,new THREE.BoxGeometry(.16,.11,.2),glove,-.2,-.02,-.27);
   const rightArm=new THREE.Group();rightArm.position.set(.55,-.62,-.25);model.add(rightArm);
-  const rs=addGunPart(rightArm,new THREE.CapsuleGeometry(.1,.36,5,10),sleeve,.08,-.04,.08);rs.rotation.x=-.9;rs.rotation.z=.2;
+  const rs=addGunPart(rightArm,new THREE.CylinderGeometry(.085,.105,.36,12),sleeve,.08,-.04,.08);rs.rotation.x=-.9;rs.rotation.z=.2;
   addGunPart(rightArm,new THREE.BoxGeometry(.15,.12,.16),glove,.08,-.03,-.1);
   model.position.x=-.38;model.visible=id===initialWeapon;weaponModels.push(model);weapon.add(model);
  };
