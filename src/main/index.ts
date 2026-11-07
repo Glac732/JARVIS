@@ -6,32 +6,34 @@ import {spawn,spawnSync} from 'node:child_process';
 import {normalizeWebUrl,normalizeProviderEndpoint,approvedApplication,validateModelName,validateSearchQuery,validatePublicSettings} from '../shared/security';
 import type {ChatMessage,PublicSettings} from '../shared/types';
 
+app.setName('BREACH');
+app.setAppUserModelId('com.breach.tactical');
 const defaults:PublicSettings={provider:'openai',model:'gpt-4o-mini',endpoint:'https://api.openai.com/v1',hasCredential:false,voiceEnabled:true,speechRate:1,theme:'dark',memoryEnabled:true,computerControl:false,searchProvider:'none',hasSearchCredential:false};
 let settings:PublicSettings={...defaults};let secret:{apiKey?:string;searchKey?:string}={};let windowRef:BrowserWindow|null=null;let tray:Tray|null=null;let active:AbortController|null=null;
-if(process.env.PORTABLE_EXECUTABLE_DIR)app.setPath('userData',path.join(process.env.PORTABLE_EXECUTABLE_DIR,'JARVIS-Data'));
+if(process.env.PORTABLE_EXECUTABLE_DIR)app.setPath('userData',path.join(process.env.PORTABLE_EXECUTABLE_DIR,'BREACH-Data'));
 const dir=app.getPath('userData'),settingsPath=path.join(dir,'settings.json'),secretsPath=path.join(dir,'secrets.bin'),historyPath=path.join(dir,'history.json');
 async function load(){await fs.mkdir(dir,{recursive:true});try{settings={...defaults,...JSON.parse(await fs.readFile(settingsPath,'utf8'))};}catch{}try{if(safeStorage.isEncryptionAvailable())secret=JSON.parse(safeStorage.decryptString(await fs.readFile(secretsPath)));}catch{secret={};}settings.hasCredential=!!secret.apiKey;settings.hasSearchCredential=!!secret.searchKey;}
 async function persist(){if((secret.apiKey||secret.searchKey)&&!safeStorage.isEncryptionAvailable())throw new Error('Windows secure credential storage is unavailable. Credentials were not saved.');settings.hasCredential=!!secret.apiKey;settings.hasSearchCredential=!!secret.searchKey;await fs.writeFile(settingsPath,JSON.stringify(settings,null,2));if(safeStorage.isEncryptionAvailable())await fs.writeFile(secretsPath,safeStorage.encryptString(JSON.stringify(secret)));}
 function status(s:string){windowRef?.webContents.send('jarvis:status',s);}
-function makeWindow(){windowRef=new BrowserWindow({width:1440,height:920,minWidth:1000,minHeight:680,show:false,backgroundColor:'#070a10',title:'J.A.R.V.I.S.',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'../preload/index.js'),contextIsolation:true,nodeIntegration:false,sandbox:true}});windowRef.webContents.setWindowOpenHandler(()=>({action:'deny'}));windowRef.webContents.on('will-navigate',(e,u)=>{if(!u.startsWith('file://')&&!( !app.isPackaged&&u.startsWith('http://127.0.0.1:5173')))e.preventDefault();});windowRef.once('ready-to-show',()=>windowRef?.show());if(app.isPackaged)void windowRef.loadFile(path.join(__dirname,'../renderer/index.html'));else void windowRef.loadURL('http://127.0.0.1:5173');windowRef.on('closed',()=>windowRef=null);}
-function makeTray(){try{const icon=nativeImage.createFromPath(path.join(process.resourcesPath,'icon.png'));tray=new Tray(icon);tray.setToolTip('J.A.R.V.I.S.');tray.setContextMenu(Menu.buildFromTemplate([{label:'Show JARVIS',click:()=>windowRef?.show()},{label:'Quit',click:()=>app.quit()}]));}catch{}}
+function makeWindow(){windowRef=new BrowserWindow({width:1440,height:920,minWidth:1000,minHeight:680,show:false,backgroundColor:'#070a10',title:'BREACH',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'../preload/index.js'),contextIsolation:true,nodeIntegration:false,sandbox:true}});windowRef.webContents.setWindowOpenHandler(()=>({action:'deny'}));windowRef.webContents.on('will-navigate',(e,u)=>{if(!u.startsWith('file://')&&!( !app.isPackaged&&u.startsWith('http://127.0.0.1:5173')))e.preventDefault();});windowRef.once('ready-to-show',()=>windowRef?.show());if(app.isPackaged)void windowRef.loadFile(path.join(__dirname,'../renderer/index.html'));else void windowRef.loadURL('http://127.0.0.1:5173');windowRef.on('closed',()=>windowRef=null);}
+function makeTray(){try{const icon=nativeImage.createFromPath(path.join(process.resourcesPath,'icon.png'));tray=new Tray(icon);tray.setToolTip('BREACH');tray.setContextMenu(Menu.buildFromTemplate([{label:'Show BREACH',click:()=>windowRef?.show()},{label:'Quit',click:()=>app.quit()}]));}catch{}}
 function configureAutoUpdates(){
   if(!app.isPackaged)return;
   autoUpdater.autoDownload=true;
   autoUpdater.autoInstallOnAppQuit=true;
-  autoUpdater.on('error',error=>console.error('[JARVIS updater]',error));
+  autoUpdater.on('error',error=>console.error('[BREACH updater]',error));
   autoUpdater.on('update-downloaded',info=>{
     void dialog.showMessageBox({
       type:'info',
-      title:'J.A.R.V.I.S. update ready',
-      message:`J.A.R.V.I.S. version ${info.version} has been downloaded.`,
-      detail:'Restart J.A.R.V.I.S. now to install the update. Your settings and API credentials will be preserved.',
+      title:'BREACH update ready',
+      message:`BREACH version ${info.version} has been downloaded.`,
+      detail:'Restart BREACH now to install the update. Your settings and API credentials will be preserved.',
       buttons:['Restart & install','Later'],
       defaultId:0,
       cancelId:1
     }).then(({response})=>{if(response===0)autoUpdater.quitAndInstall();});
   });
-  const check=()=>{void autoUpdater.checkForUpdates().catch(error=>console.error('[JARVIS update check]',error));};
+  const check=()=>{void autoUpdater.checkForUpdates().catch(error=>console.error('[BREACH update check]',error));};
   setTimeout(check,12000);
   setInterval(check,6*60*60*1000);
 }
