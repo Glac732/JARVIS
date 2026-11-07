@@ -29,7 +29,7 @@ $g.DrawString('B',$font,$brush,(New-Object System.Drawing.RectangleF(70,80,372,3
 $bmp.Save((Join-Path $repoRoot 'build/icon.png'),[System.Drawing.Imaging.ImageFormat]::Png)
 # Classic 32-bit DIB-backed ICO frame. NSIS accepts this format consistently.
 $size = 32
-$iconBitmap = New-Object System.Drawing.Bitmap $size,$size,[System.Drawing.Imaging.PixelFormat]::Format32bppArgb
+$iconBitmap = [System.Drawing.Bitmap]::new($size,$size,[System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $ig = [System.Drawing.Graphics]::FromImage($iconBitmap)
 $ig.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
 $ig.Clear([System.Drawing.Color]::FromArgb(13,18,17))
