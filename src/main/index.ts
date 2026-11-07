@@ -6,9 +6,11 @@ import {spawn,spawnSync} from 'node:child_process';
 import {normalizeWebUrl,normalizeProviderEndpoint,approvedApplication,validateModelName,validateSearchQuery,validatePublicSettings} from '../shared/security';
 import type {ChatMessage,PublicSettings} from '../shared/types';
 
+app.setName('BREACH');
+app.setAppUserModelId('com.breach.tactical');
 const defaults:PublicSettings={provider:'openai',model:'gpt-4o-mini',endpoint:'https://api.openai.com/v1',hasCredential:false,voiceEnabled:true,speechRate:1,theme:'dark',memoryEnabled:true,computerControl:false,searchProvider:'none',hasSearchCredential:false};
 let settings:PublicSettings={...defaults};let secret:{apiKey?:string;searchKey?:string}={};let windowRef:BrowserWindow|null=null;let tray:Tray|null=null;let active:AbortController|null=null;
-if(process.env.PORTABLE_EXECUTABLE_DIR)app.setPath('userData',path.join(process.env.PORTABLE_EXECUTABLE_DIR,'JARVIS-Data'));
+if(process.env.PORTABLE_EXECUTABLE_DIR)app.setPath('userData',path.join(process.env.PORTABLE_EXECUTABLE_DIR,'BREACH-Data'));
 const dir=app.getPath('userData'),settingsPath=path.join(dir,'settings.json'),secretsPath=path.join(dir,'secrets.bin'),historyPath=path.join(dir,'history.json');
 async function load(){await fs.mkdir(dir,{recursive:true});try{settings={...defaults,...JSON.parse(await fs.readFile(settingsPath,'utf8'))};}catch{}try{if(safeStorage.isEncryptionAvailable())secret=JSON.parse(safeStorage.decryptString(await fs.readFile(secretsPath)));}catch{secret={};}settings.hasCredential=!!secret.apiKey;settings.hasSearchCredential=!!secret.searchKey;}
 async function persist(){if((secret.apiKey||secret.searchKey)&&!safeStorage.isEncryptionAvailable())throw new Error('Windows secure credential storage is unavailable. Credentials were not saved.');settings.hasCredential=!!secret.apiKey;settings.hasSearchCredential=!!secret.searchKey;await fs.writeFile(settingsPath,JSON.stringify(settings,null,2));if(safeStorage.isEncryptionAvailable())await fs.writeFile(secretsPath,safeStorage.encryptString(JSON.stringify(secret)));}
