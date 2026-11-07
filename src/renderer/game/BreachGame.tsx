@@ -106,6 +106,22 @@ export default function BreachGame({onExit,onMatchEnd,initialWeapon}:Props){
  const masonry=mat(0x77786f),windowGlass=new THREE.MeshStandardMaterial({color:0x1d2b30,roughness:.24,metalness:.35}),trim=mat(0x424844),rust=mat(0x795b42);
  const building=(x:number,z:number,w:number,d:number,h:number,rotation=0)=>{const root=new THREE.Group();const shell=cube(w,h,d,masonry,0,h/2,0);root.add(shell);root.add(cube(w+.25,.22,d+.25,trim,0,h+.1,0));root.add(cube(w+.18,.16,d+.18,mat(0x9a8e79),0,.12,0));const faceZ=d/2+.012;for(let floor=0;floor<2;floor++){for(let col=0;col<Math.max(2,Math.floor(w/2.5));col++){const xx=-w/2+1.2+col*(w-2.4)/(Math.max(1,Math.floor(w/2.5)-1)),yy=1.45+floor*2.05;if(yy>h-.45)continue;root.add(cube(1.05,1.05,.055,windowGlass,xx,yy,faceZ));root.add(cube(1.2,.09,.13,trim,xx,yy+.57,faceZ));root.add(cube(.08,1.15,.12,trim,xx-.57,yy,faceZ));root.add(cube(.08,1.15,.12,trim,xx+.57,yy,faceZ));root.add(cube(1.15,.07,.12,trim,xx,yy-.56,faceZ));}}const door=cube(1.15,2.25,.09,dark,-w*.25,1.15,faceZ);root.add(door);for(let i=0;i<3;i++)root.add(cube(.24,.12,.18,rust,w*.2+i*.38,.42,.1));root.position.set(x,0,z);root.rotation.y=rotation;scene.add(root);obstacle(w,h,d,x,h/2,z,masonry);return root;};
  building(-29,-9,13,9,6.2,.12);building(29,9,12,9,5.8,-.18);building(-3,-29,15,8,5.2,0);building(3,29,14,7,4.8,Math.PI);
+ // Enterable command post: real open doorway, interior floor, split walls, ceiling beams and furnished cover.
+ const commandFloor=new THREE.Mesh(new THREE.PlaneGeometry(11.5,7.5),new THREE.MeshStandardMaterial({color:0x555951,roughness:.94}));commandFloor.rotation.x=-Math.PI/2;commandFloor.position.set(-22,.035,-20);commandFloor.receiveShadow=true;scene.add(commandFloor);
+ const commandWall=(w:number,h:number,d:number,x:number,y:number,z:number)=>obstacle(w,h,d,x,y,z,masonry);
+ commandWall(11.5,4,.45,-22,2,-24);commandWall(.45,4,7.5,-27.75,2,-20);commandWall(.45,4,7.5,-16.25,2,-20);
+ commandWall(3.6,4,.45,-25.95,2,-16);commandWall(3.6,4,.45,-18.05,2,-16);
+ commandWall(11.5,.35,.45,-22,3.95,-20);
+ for(const x of [-26.8,-23.2,-19.8,-16.9]){const pillar=cube(.22,4,.22,trim,x,2,-16.25);scene.add(pillar);}
+ // Interior light, wall-mounted utility panels, field desk and stacked supply crates.
+ const interiorLamp=new THREE.PointLight(0xe8c58a,5,12);interiorLamp.position.set(-22,3.3,-20);scene.add(interiorLamp);
+ scene.add(cube(2.4,.12,1.1,trim,-22,1.05,-21.6),cube(.12,.95,.12,dark,-23,0.52,-21.6),cube(.12,.95,.12,dark,-21,0.52,-21.6));
+ scene.add(cube(1.1,.75,.12,windowGlass,-25.4,2.5,-23.72),cube(1.15,.8,.12,windowGlass,-18.6,2.5,-23.72));
+ for(let i=0;i<4;i++){const crateBox=cube(.75,.68,.72,i%2?crate:metal,-25.2+(i%2)*1.05,.34,-18.2+Math.floor(i/2)*.9);scene.add(crateBox);scene.add(cube(.78,.055,.76,trim,-25.2+(i%2)*1.05,.58,-18.2+Math.floor(i/2)*.9));}
+ const mapBoard=cube(1.5,.95,.08,dark,-22,2.3,-23.7);scene.add(mapBoard);for(let i=0;i<5;i++)scene.add(cube(.12,.025,.02,rust,-22.55+(i%3)*.42,2.55-Math.floor(i/3)*.3,-23.64));
+ // Partial roof canopy keeps the interior readable from outside while giving a covered fighting position.
+ scene.add(cube(5.4,.22,7.4,trim,-24.95,4.05,-20),cube(5.4,.22,2.6,trim,-18.95,4.05,-22.7));
+
  // Ruined wall sections, broken parapets and rubble fields.
  for(const [x,z,r] of [[-13,-15,.2],[15,-17,-.3],[-25,20,.8],[23,20,-.5],[1,10,.1]] as number[][]){const ruin=new THREE.Group();for(let i=0;i<5;i++){const width=1.2+((i*7)%3)*.35,height=1.5+((i*5)%4)*.45;const block=cube(width,height,.55,masonry,(i-2)*1.15,height/2,0);block.rotation.z=(i%2?-.04:.035);ruin.add(block);if(i%2===0)ruin.add(cube(width*.75,.07,.58,trim,(i-2)*1.15,height+.05,0));}ruin.position.set(x,0,z);ruin.rotation.y=r;scene.add(ruin);obstacles.push(cube(6,2.4,.7,masonry,x,1.2,z));}
  // Road markings, broken asphalt patches and low-contrast painted lane edges.
