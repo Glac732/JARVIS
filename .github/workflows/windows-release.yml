@@ -1,4 +1,4 @@
-name: Build and smoke-test JARVIS Windows x64
+name: Build and smoke-test BREACH Windows x64
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: jarvis-windows-${{ github.ref }}
+  group: breach-windows-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -54,9 +54,9 @@ jobs:
               return [int]$reader.ReadUInt16()
             } finally { $stream.Dispose() }
           }
-          $installer = Get-Item 'release/JARVIS-Setup-x64.exe'
-          $portable = Get-Item 'release/JARVIS-Portable-x64.exe'
-          $app = Get-Item 'release/win-unpacked/JARVIS.exe'
+          $installer = Get-Item 'release/BREACH-Setup-x64.exe'
+          $portable = Get-Item 'release/BREACH-Portable-x64.exe'
+          $app = Get-Item 'release/win-unpacked/BREACH.exe'
           foreach ($file in @($installer, $portable, $app)) {
             if ($file.Length -lt 1MB) { throw "Artifact unexpectedly small: $($file.Name)" }
           }
@@ -87,16 +87,16 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path release | Out-Null
           if (!(Test-Path 'release/windows-smoke-report.txt')) {
-            @('JARVIS Windows x64 CI report', "Workflow conclusion: ${{ job.status }}", 'Smoke tests did not complete; inspect preceding failed steps.') | Set-Content 'release/windows-smoke-report.txt' -Encoding UTF8
+            @('BREACH Windows x64 CI report', "Workflow conclusion: ${{ job.status }}", 'Smoke tests did not complete; inspect preceding failed steps.') | Set-Content 'release/windows-smoke-report.txt' -Encoding UTF8
           }
       - name: Upload release artifacts and smoke report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: JARVIS-Windows-x64
+          name: BREACH-Windows-x64
           path: |
-            release/JARVIS-Setup-x64.exe
-            release/JARVIS-Portable-x64.exe
+            release/BREACH-Setup-x64.exe
+            release/BREACH-Portable-x64.exe
             release/latest.yml
             release/*.blockmap
             release/windows-smoke-report.txt
