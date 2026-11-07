@@ -1,0 +1,19 @@
+{
+  "name": "BREACH — Tactical Operations",
+  "short_name": "BREACH",
+  "description": "Offline tactical first-person shooter",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0b100e",
+  "theme_color": "#111915",
+  "icons": [
+    {
+      "src": "/breach-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
