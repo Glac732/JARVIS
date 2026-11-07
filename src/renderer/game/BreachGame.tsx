@@ -29,7 +29,7 @@ function createBot(scene:THREE.Scene,x:number,z:number,index=0):Bot{
  // Layered torso, plate carrier, shoulder protection and modular equipment.
  part(new THREE.CylinderGeometry(.29,.35,.72,14),uniform,0,1.13,0);
  part(new THREE.BoxGeometry(.58,.58,.22),armor,0,1.18,.205);
- part(new THREE.BoxGeometry(.34,.38,.075),dark,0,1.2,.34);part(new THREE.BoxGeometry(.11,.14,.035),rust,-.25,1.43,.31);part(new THREE.BoxGeometry(.1,.14,.035),fabric,.25,1.43,.31);
+ part(new THREE.BoxGeometry(.34,.38,.075),dark,0,1.2,.34);part(new THREE.BoxGeometry(.11,.14,.035),mat(0x795b42),-.25,1.43,.31);part(new THREE.BoxGeometry(.1,.14,.035),fabric,.25,1.43,.31);
  for(let i=0;i<3;i++){part(new THREE.BoxGeometry(.13,.2,.1),fabric,-.2+i*.2,1.06,.38);part(new THREE.BoxGeometry(.14,.18,.1),dark,-.2+i*.2,1.06,.44);}
  part(new THREE.BoxGeometry(.42,.3,.12),dark,0,.72,-.19);
  // Neck, head, balaclava, helmet shell, rails and optics.
