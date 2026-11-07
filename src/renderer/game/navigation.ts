@@ -20,3 +20,37 @@ export function findGridPath(start:NavPoint,goal:NavPoint,obstacles:readonly Nav
   return parents.get(k)||remaining.get(k);
  }
 }
+
+/** Select a reachable point where a real obstacle intersects the player's firing line. */
+export function findProtectedCover(
+  start:NavPoint,
+  player:NavPoint,
+  obstacles:readonly NavRect[],
+  bounds={minX:-35,maxX:35,minZ:-32,maxZ:32},
+):NavPoint|null{
+ const blockedLine=(target:NavPoint,rect:NavRect)=>{
+  const dx=target.x-player.x,dz=target.z-player.z;
+  const minX=rect.x-rect.halfWidth,maxX=rect.x+rect.halfWidth,minZ=rect.z-rect.halfDepth,maxZ=rect.z+rect.halfDepth;
+  let t0=0,t1=1;
+  const clip=(p:number,q:number)=>{if(Math.abs(p)<1e-8)return q>=0;const r=q/p;if(p<0){if(r>t1)return false;if(r>t0)t0=r;}else{if(r<t0)return false;if(r<t1)t1=r;}return true;};
+  return clip(-dx,player.x-minX)&&clip(dx,maxX-player.x)&&clip(-dz,player.z-minZ)&&clip(dz,maxZ-player.z)&&t0<.97&&t1>.015;
+ };
+ let best:NavPoint|null=null,bestScore=Infinity;
+ for(const o of obstacles){
+  const candidates:NavPoint[]=[
+   {x:o.x-o.halfWidth-.9,z:o.z},{x:o.x+o.halfWidth+.9,z:o.z},
+   {x:o.x,z:o.z-o.halfDepth-.9},{x:o.x,z:o.z+o.halfDepth+.9},
+  ];
+  for(const candidate of candidates){
+   if(candidate.x<bounds.minX||candidate.x>bounds.maxX||candidate.z<bounds.minZ||candidate.z>bounds.maxZ)continue;
+   if(!blockedLine(candidate,o))continue;
+   const route=findGridPath(start,candidate,obstacles,bounds);
+   if(!route.length)continue;
+   const length=route.reduce((sum,p,i)=>i?sum+Math.hypot(p.x-route[i-1].x,p.z-route[i-1].z):0,0);
+   const playerDistance=Math.hypot(candidate.x-player.x,candidate.z-player.z);
+   const score=length+Math.max(0,5-playerDistance)*.12;
+   if(score<bestScore){bestScore=score;best=candidate;}
+  }
+ }
+ return best;
+}
