@@ -2,7 +2,7 @@ name: Build and smoke-test BREACH Windows x64
 
 on:
   push:
-    branches: [main, breach-fps]
+    branches: [main, breach-fps, 'development/**']
     tags: ["v*"]
   pull_request:
     branches: [main]
