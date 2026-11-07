@@ -38,8 +38,8 @@ export function findProtectedCover(
  let best:NavPoint|null=null,bestScore=Infinity;
  for(const o of obstacles){
   const candidates:NavPoint[]=[
-   {x:o.x-o.halfWidth-.9,z:o.z},{x:o.x+o.halfWidth+.9,z:o.z},
-   {x:o.x,z:o.z-o.halfDepth-.9},{x:o.x,z:o.z+o.halfDepth+.9},
+   {x:o.x-o.halfWidth-1.8,z:o.z},{x:o.x+o.halfWidth+1.8,z:o.z},
+   {x:o.x,z:o.z-o.halfDepth-1.8},{x:o.x,z:o.z+o.halfDepth+1.8},
   ];
   for(const candidate of candidates){
    if(candidate.x<bounds.minX||candidate.x>bounds.maxX||candidate.z<bounds.minZ||candidate.z>bounds.maxZ)continue;
