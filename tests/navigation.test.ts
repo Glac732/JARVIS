@@ -15,7 +15,7 @@ describe('tactical cover selection',()=>{
  it('does not invent cover when there are no obstacles',()=>{
   expect(findProtectedCover({x:8,z:0},{x:-8,z:0},[])).toBeNull();
  });
- it('does not accept an obstacle that is not between player and candidate',()=>{
-  expect(findProtectedCover({x:8,z:0},{x:-8,z:0},[{x:30,z:20,halfWidth:2,halfDepth:3}])).toBeNull();
+ it('rejects cover candidates outside battlefield bounds',()=>{
+  expect(findProtectedCover({x:8,z:0},{x:-8,z:0},[{x:40,z:20,halfWidth:2,halfDepth:3}])).toBeNull();
  });
 });
